@@ -3,10 +3,10 @@ const mysql = require('mysql');
 module.exports = {
     createConnection: function() {
         var conn = mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "password",
-            database: "CST336_Project"
+            host: "us-cdbr-iron-east-02.cleardb.net",
+            user: "b91f42fc83bc56",
+            password: "70d8e8dd",
+            database: "heroku_32cdeda847586a8"
         });
         return conn;
       },
