@@ -110,43 +110,43 @@ app.get("/logout", function (req, res) {
 //    BEGIN Ivan Admin Page Route
 //------------------------------------
 app.get("/adminPage", isAuthenticated, async function (req, res) {
-    //var conn = ia_tools.createSqlDb_connection();
+    const database = new ia_tools.Database;
     var sql = "SELECT * FROM products";
     var results;
+
+    results = await database.query(sql, []).then( rows => {
+        results = rows;
+        res.render("adminPage", { "adminName": req.session.username, "rows": results });})
+        .catch(err => {console.log(err)});
+});
+
+app.get("/api/adminPage", isAuthenticated, async function (req, res) {
+    const database = new ia_tools.Database;
+    //var conn = ia_tools.createSqlDb_connection();
+    let sql;// = "SELECT * FROM products";
+    let results;
 
     /*conn.connect(function (err) {
         if (err) throw err;
     });*/
 
-    //results = await ia_tools.sendQuery(sql, [], conn);
-    results = await ia_tools.Database.query(sql, []).then( rows => {results = rows;})
-        .catch(err => {console.log(err)});
-    res.render("adminPage", { "adminName": req.session.username, "rows": results });
-});
-
-app.get("/api/adminPage", isAuthenticated, async function (req, res) {
-    var conn = ia_tools.createSqlDb_connection();
-    var sql = "SELECT * FROM products";
-    var results;
-
-    conn.connect(function (err) {
-        if (err) throw err;
-    });
-
     if (req.query.action == "requestItem") {
-        var sqlPull = "SELECT * FROM products WHERE itemID=?";
+        sql = "SELECT * FROM products WHERE itemID=?";
         var sqlParams = [req.query.itemID];
-        results = await ia_tools.sendQuery(sqlPull, sqlParams, conn);
-        res.send(results);
+        results = await database.query(sql, [sqlParams]).then( rows => {
+            results = rows;
+            res.send(results);
+        }).catch(err => {console.log(err)});
     } else if (req.query.action == "redrawTable") {
-        var sql = "SELECT * FROM products";
-        results = await ia_tools.sendQuery(sql, [], conn);
-        res.send(results);
+        sql = "SELECT * FROM products";
+        results = await database.query(sql, []).then( rows => {
+            results = rows;
+            res.send(results);
+        }).catch(err => {console.log(err)});
     } else if (req.query.action == "report") {
         let queryType = req.query.query;
         let specifier = req.query.specifier;
-        let sql, param; // need?
-        var error;
+        let sql;
 
         if (queryType == 'popular') {
             sql = "SELECT products.itemID, itemName, SUM(itemquantity) as 'total_units' FROM products INNER JOIN detailedtransactions ON products.itemID = detailedtransactions.itemID GROUP BY itemID ORDER BY SUM(itemquantity)";
@@ -173,19 +173,17 @@ app.get("/api/adminPage", isAuthenticated, async function (req, res) {
             } else if (specifier == 'least') {
                 sql += " ASC LIMIT 10";
             }
-        } 
-        results = await ia_tools.sendQuery(sql, [], conn).catch(err => {error = err});
-
-        if (error) {
-            console.log(error)
-        } else {
-            res.send(results);
         }
-        
-    } else {
+
+        results = await ia_tools.sendQuery(sql, [], conn).then( rows => {
+            results = rows;
+            res.send(results);
+        }).catch(err => {console.log(err)});
+    } /*else {
         results = await ia_tools.sendQuery(sql, [], conn);
         res.render("adminPage", { "adminName": req.session.username, "rows": results });
-    }
+    }*/
+
 });
 
 app.post("/adminPage", isAuthenticated, async function (req, res) {
@@ -219,6 +217,9 @@ app.post("/adminPage", isAuthenticated, async function (req, res) {
     var sql = "SELECT * FROM products";
     var results = await ia_tools.sendQuery(sql, [], conn);
     res.render("adminPage", { "adminName": "ivan", "rows": results });
+
+    // close connection - not a pool connection
+    conn.end();
 });
 //------------------------------------
 //    END Ivan Admin Page Route
@@ -246,6 +247,8 @@ app.get("/checkoutPreview", isAuthenticated, async function (req, res) {
   var results = await ia_tools.sendQuery(sql, [userid], conn);
     
   res.render("checkout", {"rows": results, "totalCost":totalCost});
+  conn.end();
+
 });//getCheckout
 
 //Button to finalize checkout and add transaction
