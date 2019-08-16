@@ -10,6 +10,7 @@ module.exports = {
     Database: class {
         constructor() {
             this.connection = mysql.createPool({
+                connectionLimit: 100,
                 host: "us-cdbr-iron-east-02.cleardb.net",
                 user: "b91f42fc83bc56",
                 password: "70d8e8dd",
