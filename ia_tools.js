@@ -23,8 +23,10 @@ module.exports = {
                 //if (err) throw err;
                 if (!results || err) {
                     reject( err );
+                    conn.end;
                 } else {
                     resolve ( results );
+                    conn.end;
                 }
             });
         });
@@ -35,6 +37,7 @@ module.exports = {
             conn.query(sql, param, function (err) {
                 if (err) throw err;
                 resolve();
+                conn.end;
             });
         });
     }
