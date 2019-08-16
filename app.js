@@ -144,6 +144,7 @@ app.get("/api/adminPage", isAuthenticated, async function (req, res) {
         let queryType = req.query.query;
         let specifier = req.query.specifier;
         let sql, param; // need?
+        var error;
 
         if (queryType == 'popular') {
             sql = "SELECT products.itemID, itemName, SUM(itemquantity) as 'total_units' FROM products INNER JOIN detailedtransactions ON products.itemID = detailedtransactions.itemID GROUP BY itemID ORDER BY SUM(itemquantity)";
@@ -170,8 +171,7 @@ app.get("/api/adminPage", isAuthenticated, async function (req, res) {
             } else if (specifier == 'least') {
                 sql += " ASC LIMIT 10";
             }
-        }
-        var error;
+        } 
         results = await ia_tools.sendQuery(sql, [], conn).catch(err => {error = err});
 
         if (error) {
@@ -179,7 +179,7 @@ app.get("/api/adminPage", isAuthenticated, async function (req, res) {
         } else {
             res.send(results);
         }
-
+        
     } else {
         results = await ia_tools.sendQuery(sql, [], conn);
         res.render("adminPage", { "adminName": req.session.username, "rows": results });
