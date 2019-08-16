@@ -85,8 +85,10 @@ module.exports = {
                     if (err) throw err;
                     if (!result.length) {
                         resolve(undefined);
+                        conn.end;
                     } else {                                            
                         resolve ( result[0] );
+                        conn.end;
                     }
                 });
             }); // end connect
