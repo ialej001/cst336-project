@@ -122,7 +122,7 @@ $(document).ready(function () {
         var tags = $("#updateTags").val();
         var actionMessage = $("#actionMessage");
 
-        if (itemID == "" || name == "" || price == ""|| description == "" || tag == "") {
+        if (itemID == "" || name == "" || price == ""|| description == "" || tags == "") {
             $("#upErrorMessage").show();
             $("#upErrorMessage").css({"textAlign": "center", "color": "red"})
         } else {
