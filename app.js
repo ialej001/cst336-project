@@ -132,7 +132,7 @@ app.get("/api/adminPage", isAuthenticated, async function (req, res) {
 
     if (req.query.action == "requestItem") {
         sql = "SELECT * FROM products WHERE itemID=?";
-        var sqlParams = [req.query.itemID];
+        var sqlParams = req.query.itemID;
         results = await database.query(sql, [sqlParams]).then( rows => {
             results = rows;
             res.send(results);
