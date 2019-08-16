@@ -110,15 +110,17 @@ app.get("/logout", function (req, res) {
 //    BEGIN Ivan Admin Page Route
 //------------------------------------
 app.get("/adminPage", isAuthenticated, async function (req, res) {
-    var conn = ia_tools.createSqlDb_connection();
+    //var conn = ia_tools.createSqlDb_connection();
     var sql = "SELECT * FROM products";
     var results;
 
-    conn.connect(function (err) {
+    /*conn.connect(function (err) {
         if (err) throw err;
-    });
+    });*/
 
-    results = await ia_tools.sendQuery(sql, [], conn);
+    //results = await ia_tools.sendQuery(sql, [], conn);
+    results = await ia_tools.Database.query(sql, []).then( rows => {results = rows;})
+        .catch(err => {console.log(err)});
     res.render("adminPage", { "adminName": req.session.username, "rows": results });
 });
 
