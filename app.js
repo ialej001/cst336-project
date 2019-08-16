@@ -120,8 +120,6 @@ app.get("/adminPage", isAuthenticated, async function (req, res) {
 
     results = await ia_tools.sendQuery(sql, [], conn);
     res.render("adminPage", { "adminName": req.session.username, "rows": results });
-
-    //conn.end();
 });
 
 app.get("/api/adminPage", isAuthenticated, async function (req, res) {
@@ -186,8 +184,6 @@ app.get("/api/adminPage", isAuthenticated, async function (req, res) {
         results = await ia_tools.sendQuery(sql, [], conn);
         res.render("adminPage", { "adminName": req.session.username, "rows": results });
     }
-
-    //conn.end();
 });
 
 app.post("/adminPage", isAuthenticated, async function (req, res) {
@@ -221,9 +217,6 @@ app.post("/adminPage", isAuthenticated, async function (req, res) {
     var sql = "SELECT * FROM products";
     var results = await ia_tools.sendQuery(sql, [], conn);
     res.render("adminPage", { "adminName": "ivan", "rows": results });
-
-    // close connection - not a pool connection
-    //conn.end();
 });
 //------------------------------------
 //    END Ivan Admin Page Route
@@ -251,8 +244,6 @@ app.get("/checkoutPreview", isAuthenticated, async function (req, res) {
   var results = await ia_tools.sendQuery(sql, [userid], conn);
     
   res.render("checkout", {"rows": results, "totalCost":totalCost});
-  conn.end();
-
 });//getCheckout
 
 //Button to finalize checkout and add transaction
